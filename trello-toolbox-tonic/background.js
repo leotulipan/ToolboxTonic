@@ -1,47 +1,24 @@
-chrome.commands.onCommand.addListener(function (command) {
+chrome.commands.onCommand.addListener(async (command) => {
     if (command === 'get_trello_email') {
-      chrome.tabs.executeScript({
-
-        // 1. Click the share button
-        const shareButton = document.querySelector('.button-link.js-more-menu');
-        if (shareButton) {
-        shareButton.click();
+      try {
+        const tabs = await new Promise((resolve) =>
+          chrome.tabs.query({ active: true, currentWindow: true }, resolve)
+        );
+  
+        const activeTab = tabs[0];
+        if (activeTab.url.startsWith('https://trello.com')) {
+          chrome.scripting.executeScript({
+            target: { tabId: activeTab.id },
+            files: ['content-script.js'],
+          });
         } else {
-        console.error('Share button not found');
+          console.error(
+            'The Trello Toolbox Tonic extension only works on https://trello.com'
+          );
         }
-
-        setTimeout(() => {
-        // 2. Check if the pop-over is shown
-        const popOver = document.querySelector('.pop-over.is-shown');
-        if (popOver) {
-            // 3. Get the value from input with class "js-email"
-            const emailInput = popOver.querySelector('.js-email');
-            if (emailInput) {
-            const emailValue = emailInput.value;
-            
-            // 4. Console log the value and copy it to the clipboard
-            console.log('Email value:', emailValue);
-            navigator.clipboard.writeText(emailValue).then(() => {
-                console.log('Email value copied to clipboard');
-            }).catch(err => {
-                console.error('Failed to copy email value to clipboard:', err);
-            });
-            
-            // 5. Close the pop-over
-            const closeButton = popOver.querySelector('.pop-over-header-close-btn');
-            if (closeButton) {
-                closeButton.click();
-            } else {
-                console.error('Close button not found');
-            }
-            } else {
-            console.error('Email input not found');
-            }
-        } else {
-            console.error('Pop-over not found or not shown');
-        }
-        }, 1000);
-
-});
-}
-});
+      } catch (error) {
+        console.error('Error executing Trello Toolbox Tonic:', error);
+      }
+    }
+  });
+  

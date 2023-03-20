@@ -1,12 +1,20 @@
 {
-    "manifest_version": 2,
-    "name": "Trello Helper",
-    "version": "1.0",
+    "manifest_version": 3,
+    "name": "Trello Toolbox Tonic",
+    "version": "1.0.1",
     "description": "A custom Chrome extension to get Trello card email.",
-    "permissions": ["clipboardWrite", "activeTab"],
+    "permissions": ["scripting", "clipboardWrite", "tabs"],
+    "host_permissions": ["https://trello.com/*"],
+    "action": {
+      "default_popup": "popup.html"
+    //   "default_icon": {
+    //     "16": "images/icon16.png",
+    //     "48": "images/icon48.png",
+    //     "128": "images/icon128.png"
+    //   }
+    },
     "background": {
-      "scripts": ["background.js"],
-      "persistent": false
+      "service_worker": "background.js"
     },
     "commands": {
       "get_trello_email": {
@@ -17,5 +25,10 @@
         "description": "Get Trello card email"
       }
     }
+    // "icons": {
+    //   "16": "images/icon16.png",
+    //   "48": "images/icon48.png",
+    //   "128": "images/icon128.png"
+    // }
   }
   
