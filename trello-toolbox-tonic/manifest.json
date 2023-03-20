@@ -1,0 +1,21 @@
+{
+    "manifest_version": 2,
+    "name": "Trello Helper",
+    "version": "1.0",
+    "description": "A custom Chrome extension to get Trello card email.",
+    "permissions": ["clipboardWrite", "activeTab"],
+    "background": {
+      "scripts": ["background.js"],
+      "persistent": false
+    },
+    "commands": {
+      "get_trello_email": {
+        "suggested_key": {
+          "default": "Ctrl+Shift+E",
+          "mac": "MacCtrl+Shift+E"
+        },
+        "description": "Get Trello card email"
+      }
+    }
+  }
+  
