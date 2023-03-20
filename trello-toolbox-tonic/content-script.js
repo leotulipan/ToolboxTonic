@@ -9,6 +9,7 @@ async function main() {
     let shareButton = document.querySelector('.button-link.js-more-menu');
   
     if (activeCard) {
+        console.log("Clicking activeCard");
         activeCard.click();
         await sleep(250); // wait for the card to open
     
@@ -27,7 +28,7 @@ async function main() {
         
     shareButton = document.querySelector('.button-link.js-more-menu');
     if (shareButton) {
-        console.log("Clicking sharebutton");
+        console.log("Clicking shareButton");
         shareButton.click();
         elapsedTime = 0;
 
@@ -47,12 +48,14 @@ async function main() {
             console.log(emailValue);
             navigator.clipboard.writeText(emailValue);
         
+            console.log("Closing pop-over");
             const closeButton = document.querySelector('.pop-over-header-close-btn.icon-sm.icon-close');
             if (closeButton) {
                 closeButton.click();
             }
         
             if (activeCard) {
+                console.log("Closing activeCard");
                 const closeOpenedCardButton = document.querySelector(closeCardSelector);
                 if (closeOpenedCardButton) {
                 closeOpenedCardButton.click();
@@ -66,4 +69,4 @@ async function main() {
     }
 }    
   
-  main();
+main();
