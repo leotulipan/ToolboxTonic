@@ -8,23 +8,25 @@ async function main() {
     const closeCardSelector = '.icon-md.icon-close.dialog-close-button.js-close-window';
     let shareButton = document.querySelector('.button-link.js-more-menu');
   
+    // Check if there is an activeCard element
     if (activeCard) {
-        console.log("Clicking activeCard");
-        activeCard.click();
-        await sleep(250); // wait for the card to open
-    
-        let elapsedTime = 0;
-        let maxWaitTime = 5000; // maximum wait time of 5 seconds
-    
-        // Wait for the share button to become visible or reach the maximum wait time
-        while (!shareButton && elapsedTime < maxWaitTime) {
-          await sleep(250);
-          elapsedTime += 250;
-          if (shareButton) {
-            break;
-          }
+    console.log("Clicking activeCard"); // Print a message to the console
+    activeCard.click(); // Click on the activeCard element
+    await sleep(250); // Pause the execution for 250 milliseconds, wait for the card to open
+
+    let elapsedTime = 0; // Initialize a timer variable
+    let maxWaitTime = 5000; // Set the maximum waiting time to 5000 milliseconds (5 seconds)
+
+    // Wait for the shareButton element to become visible or until the maximum wait time has passed
+    while (!shareButton && elapsedTime < maxWaitTime) {
+        await sleep(250); // Pause the execution for 250 milliseconds
+        elapsedTime += 250; // Increment the elapsed time by 250 milliseconds
+        if (shareButton) { // If shareButton becomes visible during the loop
+        break; // Exit the loop early
         }
     }
+    }
+
         
     shareButton = document.querySelector('.button-link.js-more-menu');
     if (shareButton) {
