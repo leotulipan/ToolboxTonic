@@ -6,20 +6,26 @@ async function main() {
     console.log("Trello Toolbox Tonic called");
     const activeCard = document.querySelector('.active-card');
     const closeCardSelector = '.icon-md.icon-close.dialog-close-button.js-close-window';
+    let shareButton = document.querySelector('.button-link.js-more-menu');
   
     if (activeCard) {
-      console.log("There is an active card");
-      activeCard.click();
-      await sleep(1000); // wait for the card to open
-  
-      // Check if the share button is visible; if not, wait for another 1000ms
-      let shareButton = document.querySelector('.button-link.js-more-menu');
-      if (!shareButton) {
-        await sleep(1000);
-        shareButton = document.querySelector('.button-link.js-more-menu');
-      }
+        activeCard.click();
+        await sleep(250); // wait for the card to open
+    
+        let elapsedTime = 0;
+        let maxWaitTime = 5000; // maximum wait time of 5 seconds
+    
+        // Wait for the share button to become visible or reach the maximum wait time
+        while (!shareButton && elapsedTime < maxWaitTime) {
+          await sleep(250);
+          elapsedTime += 250;
+          if (shareButton) {
+            break;
+          }
+        }
     }
-  
+        
+    shareButton = document.querySelector('.button-link.js-more-menu');
     if (shareButton) {
         console.log("Clicking sharebutton");
         shareButton.click();
@@ -31,6 +37,9 @@ async function main() {
             await sleep(250);
             elapsedTime += 250;
             emailInput = document.querySelector('.pop-over input.js-email');
+            if (emailInput) {
+                break;
+              }
         }
 
         if (emailInput) {
