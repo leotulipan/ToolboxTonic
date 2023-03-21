@@ -1,9 +1,10 @@
 # To get started, you need to install the Selenium package and Microsoft Edge WebDriver:
 
 # Install Selenium:
-# bash
-# Copy code
 # pip install selenium
+# or
+# conda install selenium
+#
 # Download the appropriate Microsoft Edge WebDriver from the following link: https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
 # Make sure you download the WebDriver version that matches your installed version of Microsoft Edge.
 
@@ -11,16 +12,14 @@
 
 
 from selenium import webdriver
+# from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.service import Service
 
 # Path to the Edge WebDriver executable
-driver_path = "C:\\Users\\leo\\Downloads\\edgedriver\\msedgedriver.exe"
-
-# Create a new Edge service
-service = Service(executable_path=driver_path)
+driver_path = r"C:\Users\leo\Downloads\edgedriver\msedgedriver.exe"
 
 # Create a new Edge browser instance and start it
-browser = webdriver.Edge(service=service)
+browser = webdriver.Edge(executable_path=driver_path)
 
 # Navigate to a specific URL
 browser.get("https://duckduckgo.com")
@@ -33,8 +32,11 @@ search_input.send_keys("Python Selenium with Edge examples")
 search_input.submit()
 
 # Option 2: Locate the search button and click it to submit the form
-# search_button = browser.find_element_by_id("search_button_homepage")
+# search_button = browser.find_element(By.ID, "search_button_homepage")
 # search_button.click()
 
-# You can close the browser when you're done
-# browser.quit()
+# Wait for the user to press Enter to close the browser
+input("Press Enter to close the browser...")
+
+# Close the browser
+browser.quit()
