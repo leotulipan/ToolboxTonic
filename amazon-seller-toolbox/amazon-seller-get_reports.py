@@ -1,45 +1,34 @@
 # To get started, you need to install the Selenium package and Microsoft Edge WebDriver:
 
 # Install Selenium:
-#  pip install selenium
-# or
-#  conda install selenium
-# also needed:
-#  pip install msedge-selenium-tools selenium==3.141.0
+#  pip install selenium==4.4.3
 
-#
 # Download the appropriate Microsoft Edge WebDriver from the following link: https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
 # Make sure you download the WebDriver version that matches your installed version of Microsoft Edge.
 
 # Set the PATH environment variable to include the directory where you downloaded the Edge WebDriver.
 
-
 from selenium import webdriver
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.edge.service import Service
-from msedge.selenium_tools import Edge, EdgeOptions
+from selenium.webdriver.edge import service
 import os
 
-# Path to the Edge WebDriver executable
+# Path to the Edge WebDriver executable (in users Downloads Folder)
 driver_path = os.path.join("C:\\", "Users", os.environ['USERNAME'], "Downloads", "edgedriver", "msedgedriver.exe")
-
-# r"C:\Users\leo\Downloads\edgedriver\msedgedriver.exe"
-
 
 # Set the path to the user data directory 
 local_app_data = os.environ['LOCALAPPDATA']
 user_data_dir = os.path.join(local_app_data, 'Microsoft', 'Edge', 'User Data')
 
 # Initialize Edge options
-edge_options = EdgeOptions()
-edge_options.use_chromium = True  # Ensure this is set to True to use the Chromium-based Edge browser
+# edge_options = Options()
+# edge_options.arguments.append(f'--user-data-dir={user_data_dir}')
 
-# Add user data directory argument
-edge_options.add_argument(f'--user-data-dir={user_data_dir}')
+edge_options = webdriver.EdgeOptions()
+edge_options.use_chromium = True
+edge_options.arguments.append(f'--user-data-dir={user_data_dir}')
 
 # Initialize the WebDriver with the custom profile
-browser = Edge(executable_path=driver_path, options=edge_options)
-
+browser = webdriver.Edge(executable_path=driver_path, options=edge_options)
 
 # Navigate to a specific URL
 browser.get("https://duckduckgo.com")
