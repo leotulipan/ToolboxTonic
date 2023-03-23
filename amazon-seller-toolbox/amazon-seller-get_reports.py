@@ -21,7 +21,10 @@ from msedge.selenium_tools import Edge, EdgeOptions
 import os
 
 # Path to the Edge WebDriver executable
-driver_path = r"C:\Users\leo\Downloads\edgedriver\msedgedriver.exe"
+driver_path = os.path.join("C:\\", "Users", os.environ['USERNAME'], "Downloads", "edgedriver", "msedgedriver.exe")
+
+# r"C:\Users\leo\Downloads\edgedriver\msedgedriver.exe"
+
 
 # Set the path to the user data directory 
 local_app_data = os.environ['LOCALAPPDATA']
@@ -54,6 +57,8 @@ search_input.submit()
 
 # Wait for the user to press Enter to close the browser
 input("Press Enter to close the browser...")
+
+# next step: https://sellercentral.amazon.de/payments/past-settlements?ref_=xx_settle_ttab_dash
 
 # Close the browser
 browser.quit()
