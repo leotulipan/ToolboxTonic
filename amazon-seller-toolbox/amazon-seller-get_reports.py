@@ -1,9 +1,12 @@
 # To get started, you need to install the Selenium package and Microsoft Edge WebDriver:
 
 # Install Selenium:
-# pip install selenium
+#  pip install selenium
 # or
-# conda install selenium
+#  conda install selenium
+# also needed:
+#  pip install msedge-selenium-tools selenium==3.141.0
+
 #
 # Download the appropriate Microsoft Edge WebDriver from the following link: https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
 # Make sure you download the WebDriver version that matches your installed version of Microsoft Edge.
@@ -13,13 +16,27 @@
 
 from selenium import webdriver
 # from selenium.webdriver.common.by import By
-from selenium.webdriver.edge.service import Service
+# from selenium.webdriver.edge.service import Service
+from msedge.selenium_tools import Edge, EdgeOptions
+import os
 
 # Path to the Edge WebDriver executable
 driver_path = r"C:\Users\leo\Downloads\edgedriver\msedgedriver.exe"
 
-# Create a new Edge browser instance and start it
-browser = webdriver.Edge(executable_path=driver_path)
+# Set the path to the user data directory 
+local_app_data = os.environ['LOCALAPPDATA']
+user_data_dir = os.path.join(local_app_data, 'Microsoft', 'Edge', 'User Data')
+
+# Initialize Edge options
+edge_options = EdgeOptions()
+edge_options.use_chromium = True  # Ensure this is set to True to use the Chromium-based Edge browser
+
+# Add user data directory argument
+edge_options.add_argument(f'--user-data-dir={user_data_dir}')
+
+# Initialize the WebDriver with the custom profile
+browser = Edge(executable_path=driver_path, options=edge_options)
+
 
 # Navigate to a specific URL
 browser.get("https://duckduckgo.com")
