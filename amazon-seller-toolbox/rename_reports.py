@@ -83,6 +83,8 @@ for filename in os.listdir(directory):  # Looping through all files in the sourc
                 os.rename(os.path.join(directory, filename), os.path.join(directory, new_filename))
             except PermissionError:
                 print(f"Skipping {filename} because it is currently in use by another process.")
+            except FileExistsError:
+                print(f"Info: The file '{new_filename}' already exists. Skipping rename.")
 
         if start_date != '' and end_date != '':
             source_file_path = os.path.join(directory, new_filename)
