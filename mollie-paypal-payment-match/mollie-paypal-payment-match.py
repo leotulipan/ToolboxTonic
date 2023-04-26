@@ -64,9 +64,9 @@ while payments and not stop_search:
         
 # If the payment is found, print its details
 if found_payment:
-    #print(f"Payment ID: {found_payment.id}")
-    #print(f"Transaction ID: {transaction_id}")
-    pprint(found_payment)
+    print(f"Order ID: {found_payment.metadata['plentyOrderId']}")
+    print(f"Transaction ID: {transaction_id}")
+    #pprint(found_payment)
     # Add more details as needed
 else:
     print("Payment not found. Last:")
