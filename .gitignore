@@ -1,6 +1,7 @@
 # custom files with personal information that shouldn't be on github
 inventory.json
 *.csv
+invoice*.pdf
 
 
 # I like to put keys in a .env file
