@@ -95,10 +95,19 @@ def find_mollie_transaction_id(belegnr: str) -> str:
         # pprint(payments[-1])
         return belegnr
 
+# Add a new function to append the document information to the global docs list
+def append_invoice_to_docs(invoice_number: str, document_filename: str, document_id: int):
+  
+    docs.append({
+        'documentId': document_id,
+        'documentFilename': document_filename,
+        'invoiceNumber': invoice_number
+    })
+
 def get_invoice_details(order_id: int) -> tuple:
     # Fetch the order details from Plenty
     params = {
-        'orderId': order_id,
+        'orderIds': order_id,
         'with[]': 'documents'
     }
     order_details = plenty.request('rest/orders', 'GET', params)
@@ -126,13 +135,14 @@ def get_invoice_details(order_id: int) -> tuple:
             if doc['type'] == 'invoice':
                 document_filename = os.path.basename(doc['path'])
                 invoice_number = doc['numberWithPrefix']
-                docs.append({
-                    'documentId': doc['id'],
-                    'documentFilename': document_filename,
-                    'invoiceNumber': invoice_number
-                })
+                # print(f'Invoice Number: {invoice_number} - {document_filename} - {order_id}')
+                # docs.append({
+                #     'documentId': doc['id'],
+                #     'documentFilename': document_filename,
+                #     'invoiceNumber': invoice_number
+                # })
 
-    return invoice_number, document_filename
+    return invoice_number, document_filename, doc['id']
 
 
 def download_invoices():
@@ -168,9 +178,13 @@ def process_csv(input_file: str, output_file: str):
                 writer.writerow(row)
             else:
                 new_belegnr = find_mollie_transaction_id(belegnr)
+                # if(new_belegnr != belegnr):
+                #     invoice_number, document_filename = get_invoice_details(new_belegnr)
+                #     print(f'Invoice Number: {invoice_number} - {new_belegnr}')
                 if(new_belegnr != belegnr):
-                    invoice_number, document_filename = get_invoice_details(new_belegnr)
+                    invoice_number, document_filename, document_id = get_invoice_details(new_belegnr)
                     print(f'Invoice Number: {invoice_number} - {new_belegnr}')
+                    append_invoice_to_docs(invoice_number, document_filename, document_id)
                 row[1] = invoice_number
                 row[4] = row[4] + " " + new_belegnr
 
