@@ -1,6 +1,6 @@
 # custom files with personal information that shouldn't be on github
 inventory.json
-BMD_*.csv
+*.csv
 
 
 # I like to put keys in a .env file
