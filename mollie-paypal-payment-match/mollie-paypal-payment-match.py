@@ -19,6 +19,17 @@ mollie_api_key = os.getenv("MOLLIE_API_KEY")
 restuser = os.environ.get('REST_USER')
 restpwd = os.environ.get('REST_PASSWORD')
 
+# Define the API endpoint
+url = 'shop.tulipans.com'
+
+docs = []
+
+# Initialize the Plenty API client
+plenty = Plenty(url, restuser, restpwd)
+# Initialize the Mollie API client
+mollie_client = Client()
+mollie_client.set_api_key(mollie_api_key) 
+
 def get_last_month_year_and_month() -> str:
     today = datetime.date.today()
     first_day_of_current_month = today.replace(day=1)
@@ -26,12 +37,6 @@ def get_last_month_year_and_month() -> str:
     return last_day_of_previous_month.strftime('%Y%m')
 
 def find_mollie_transaction_id(belegnr: str) -> str:
-
-
-    # Initialize the Mollie API client
-    mollie_client = Client()
-    mollie_client.set_api_key(mollie_api_key)  # Replace with your actual API key
-
 
     # Define the transaction ID you want to search for
     transaction_id = belegnr
@@ -76,20 +81,77 @@ def find_mollie_transaction_id(belegnr: str) -> str:
 
         # If the search hasn't stopped, fetch the next page of payments
         if not stop_search:
-            print("Next Page...")
+            # print("Next Page...")
             payments = payments.get_next()
             
     # If the payment is found, print its details
     if found_payment:
-        print(f"Order ID: {found_payment.metadata['plentyOrderId']}")
-        print(f"Transaction ID: {transaction_id}")
+        # print(f"Order ID: {found_payment.metadata['plentyOrderId']}")
+        # print(f"Transaction ID: {transaction_id}")
         #pprint(found_payment)
         return found_payment.metadata['plentyOrderId']
     else:
-        print("Payment not found. Last:")
-        pprint(payments[-1])
+        print("Payment not found.")
+        # pprint(payments[-1])
         return belegnr
+
+def get_invoice_details(order_id: int) -> tuple:
+    # Fetch the order details from Plenty
+    params = {
+        'orderId': order_id,
+        'with[]': 'documents'
+    }
+    order_details = plenty.request('rest/orders', 'GET', params)
+
+    if order_details is None or 'entries' not in order_details:
+        raise ValueError(f'No order found with ID {order_id}')
+
+    order = order_details['entries'][0]
     
+    # Extract the invoice number and document filename from the order details
+    # invoice_number = order['invoiceNumber']
+    document_filename = None
+    invoice_number = None
+
+    # if 'documents' in order:
+    #     for document in order['documents']:
+    #         if document['type'] == 'invoice':
+    #             document_filename = os.path.basename(document['path'])
+    #             invoice_number = document['numberWithPrefix']
+    #             break
+
+    if 'documents' in order:
+        # Loop over each document in the 'documents' array for the current entry
+        for doc in order['documents']:
+            if doc['type'] == 'invoice':
+                document_filename = os.path.basename(doc['path'])
+                invoice_number = doc['numberWithPrefix']
+                docs.append({
+                    'documentId': doc['id'],
+                    'documentFilename': document_filename,
+                    'invoiceNumber': invoice_number
+                })
+
+    return invoice_number, document_filename
+
+
+def download_invoices():
+    for document in docs:
+        response = plenty.request(f'rest/documents/{document["documentId"]}', 'GET')
+        file_name = document['documentFilename']
+
+        if len(response) > 500:
+            if os.path.isfile(file_name):
+                print(f"Skipping download of '{file_name}'")
+            else:
+                # Save PDF to file
+                with open(file_name, 'wb') as f:
+                    f.write(response)
+                print(f"Downloaded '{file_name}'")
+        else:
+            print(f"Error with documentId {document['documentId']} for orderId {document['orderId']}")
+
+        print("\n")
 
 def process_csv(input_file: str, output_file: str):
     with open(input_file, 'r', encoding='cp1252') as infile, open(output_file, 'w', encoding='cp1252', newline='') as outfile:
@@ -106,7 +168,12 @@ def process_csv(input_file: str, output_file: str):
                 writer.writerow(row)
             else:
                 new_belegnr = find_mollie_transaction_id(belegnr)
-                row[1] = new_belegnr
+                if(new_belegnr != belegnr):
+                    invoice_number, document_filename = get_invoice_details(new_belegnr)
+                    print(f'Invoice Number: {invoice_number} - {new_belegnr}')
+                row[1] = invoice_number
+                row[4] = row[4] + " " + new_belegnr
+
                 writer.writerow(row)
 
 def main():
@@ -121,6 +188,9 @@ def main():
     output_file = f'output_{yyyy_mm}.csv'
 
     process_csv(input_file, output_file)
+
+    print("Downloading files now")
+    download_invoices()
 
 
 if __name__ == '__main__':
